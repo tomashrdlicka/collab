@@ -1,0 +1,154 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 224 71% 4%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
+    --accent: 220 14% 96%;
+    --accent-foreground: 224 71% 4%;
+    --border: 220 13% 91%;
+    --primary: 222 47% 11%;
+    --primary-foreground: 210 20% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 20% 98%;
+  }
+
+  .dark {
+    --background: 224 71% 4%;
+    --foreground: 213 31% 91%;
+    --muted: 223 47% 11%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 216 34% 17%;
+    --accent-foreground: 210 40% 98%;
+    --border: 216 34% 17%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222 47% 1%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* CodeMirror customizations */
+.cm-editor {
+  height: 100%;
+  font-size: 0.875rem;
+}
+
+.cm-editor .cm-scroller {
+  font-family: var(--font-mono), ui-monospace, monospace;
+}
+
+.cm-editor .cm-content {
+  padding: 1rem;
+}
+
+.cm-editor.cm-focused {
+  outline: none;
+}
+
+/* Cursor colors for presence */
+.cm-ySelectionInfo {
+  font-size: 0.75rem;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  font-family: var(--font-sans);
+  opacity: 1;
+  transition: opacity 0.2s;
+}
+
+.cm-ySelection {
+  opacity: 0.3;
+}
+
+.cm-yLineSelection {
+  opacity: 0.1;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 0.5rem;
+  height: 0.5rem;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 0.25rem;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
+}
+
+/* File tree */
+.file-tree-item {
+  @apply flex items-center gap-2 px-2 py-1 rounded cursor-pointer transition-colors;
+}
+
+.file-tree-item:hover {
+  @apply bg-accent;
+}
+
+.file-tree-item.active {
+  @apply bg-accent text-accent-foreground;
+}
+
+/* Changes indicator */
+.change-indicator {
+  @apply w-2 h-2 rounded-full;
+}
+
+.change-indicator.modified {
+  @apply bg-yellow-500;
+}
+
+.change-indicator.new {
+  @apply bg-green-500;
+}
+
+.change-indicator.deleted {
+  @apply bg-red-500;
+}
+
+/* Sync status */
+.sync-status {
+  @apply flex items-center gap-1 text-xs;
+}
+
+.sync-status .dot {
+  @apply w-2 h-2 rounded-full;
+}
+
+.sync-status.synced .dot {
+  @apply bg-green-500;
+}
+
+.sync-status.syncing .dot {
+  @apply bg-yellow-500 animate-pulse;
+}
+
+.sync-status.offline .dot {
+  @apply bg-red-500;
+}
+
+/* Keyboard shortcuts */
+kbd {
+  @apply inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-mono bg-muted border rounded;
+}

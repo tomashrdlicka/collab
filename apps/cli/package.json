@@ -1,0 +1,37 @@
+{
+  "name": "@collab/cli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "collab": "./bin/collab.js"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --outDir dist",
+    "dev": "tsx src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@collab/shared": "workspace:*",
+    "@collab/sync": "workspace:*",
+    "commander": "^12.0.0",
+    "chokidar": "^3.5.3",
+    "yjs": "^13.6.11",
+    "y-websocket": "^1.5.1",
+    "keytar": "^7.9.0",
+    "open": "^10.0.3",
+    "ora": "^8.0.1",
+    "chalk": "^5.3.0",
+    "conf": "^12.0.0",
+    "inquirer": "^9.2.14",
+    "dotenv": "^16.4.1"
+  },
+  "devDependencies": {
+    "@types/inquirer": "^9.0.7",
+    "@types/node": "^20.11.0",
+    "tsup": "^8.0.1",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  }
+}
