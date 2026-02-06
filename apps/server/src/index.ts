@@ -1,4 +1,8 @@
-import 'dotenv/config'
+import dotenv from 'dotenv'
+import { resolve } from 'path'
+
+// Load .env from monorepo root
+dotenv.config({ path: resolve(import.meta.dirname, '../../../.env') })
 import { Server } from '@hocuspocus/server'
 import { createAuthExtension } from './extensions/auth'
 import { createPersistenceExtension } from './extensions/persistence'

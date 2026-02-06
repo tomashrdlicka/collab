@@ -89,3 +89,39 @@
 **How it was fixed**: Changed to `new Date().toISOString().split('T')[0]!` to get the date string.
 
 **Prevention rule**: Drizzle `date()` = string, `timestamp()` = Date. Check the column definition when assigning values.
+
+---
+
+## Next.js in Monorepo Doesn't Load Root .env
+
+**What went wrong**: GitHub OAuth button did nothing. `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET` were set in the monorepo root `.env` but Next.js couldn't see them.
+
+**Why it happened**: Next.js auto-loads `.env` files from its own project root (`apps/web/`), not the monorepo root. With pnpm workspaces, the Next.js process runs from `apps/web/` so `../../.env` is invisible.
+
+**How it was fixed**: Added `require('dotenv').config({ path: path.resolve(__dirname, '../../.env') })` at the top of `apps/web/next.config.js`. Also added `dotenv` as a devDependency of `@collab/web`.
+
+**Prevention rule**: In pnpm monorepos, always explicitly load the root `.env` in each app's config file. Don't rely on framework auto-discovery.
+
+---
+
+## Docker Port Conflicts with Local PostgreSQL
+
+**What went wrong**: `docker compose up` failed or conflicted because local PostgreSQL was already running on port 5432.
+
+**Why it happened**: Default PostgreSQL port (5432) was already in use by a local installation.
+
+**How it was fixed**: Changed `docker-compose.yml` port mapping from `5432:5432` to `5433:5432`. Updated `DATABASE_URL` to use port 5433.
+
+**Prevention rule**: Use non-default ports in Docker Compose for development to avoid conflicts with locally installed services.
+
+---
+
+## Drizzle Kit Version Incompatibility
+
+**What went wrong**: `pnpm db:push` failed with multiple errors: unknown command `push:pg`, invalid `driver: 'pg'` config, missing `connectionString`.
+
+**Why it happened**: drizzle-kit 0.20.x used different config format (`:pg` suffix, `driver` field, `connectionString`). Upgrading to 0.30.5 changed to `dialect: 'postgresql'` and `url`. Also drizzle-kit 0.31.x was incompatible with drizzle-orm 0.44.x.
+
+**How it was fixed**: Upgraded to drizzle-kit 0.30.5 + drizzle-orm 0.44.2 (compatible pair). Updated `drizzle.config.ts` format accordingly.
+
+**Prevention rule**: drizzle-orm and drizzle-kit versions must be compatible. Check the drizzle docs for version pairing. When upgrading, update config format to match the new version.
