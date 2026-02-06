@@ -57,6 +57,7 @@ export const API_PATHS = {
   CHANGES: (id: string) => `/api/workspaces/${id}/changes`,
   UNCOMMITTED: (id: string) => `/api/workspaces/${id}/changes/uncommitted`,
   COMMIT: (id: string) => `/api/workspaces/${id}/commit`,
+  IMPORT: (id: string) => `/api/workspaces/${id}/import`,
   COMMITS: (id: string) => `/api/workspaces/${id}/commits`,
   INTEGRATIONS: (id: string) => `/api/workspaces/${id}/integrations`,
   SLACK: (id: string) => `/api/workspaces/${id}/integrations/slack`,

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { formatRelativeTime, getChangeTypeColor, getChangeTypeLabel } from '@/lib/utils'
 import { CommitButton } from '@/components/workspace/CommitButton'
 import { DiffViewer } from '@/components/workspace/DiffViewer'
+import type { ImportResult } from '@collab/shared'
 
 interface Change {
   id: string
@@ -30,9 +31,35 @@ interface WorkspaceChangesProps {
 export function WorkspaceChanges({ workspace, changes: initialChanges, slug }: WorkspaceChangesProps) {
   const [changes] = useState(initialChanges)
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
+  const [isImporting, setIsImporting] = useState(false)
+  const [importResult, setImportResult] = useState<ImportResult | null>(null)
 
   const uncommittedChanges = changes.filter((c) => !c.committed)
   const committedChanges = changes.filter((c) => c.committed)
+
+  async function handleImport() {
+    setIsImporting(true)
+    setImportResult(null)
+    try {
+      const response = await fetch(`/api/workspaces/${workspace.id}/import`, {
+        method: 'POST',
+      })
+      const data = await response.json()
+      if (data.error) {
+        console.error('Import failed:', data.error.message)
+        return
+      }
+      setImportResult(data.data as ImportResult)
+      // Reload to show imported files in changes
+      if ((data.data as ImportResult).imported > 0) {
+        setTimeout(() => window.location.reload(), 1500)
+      }
+    } catch (error) {
+      console.error('Import failed:', error)
+    } finally {
+      setIsImporting(false)
+    }
+  }
 
   function toggleExpand(id: string) {
     setExpandedIds((prev) => {
@@ -148,8 +175,39 @@ export function WorkspaceChanges({ workspace, changes: initialChanges, slug }: W
           </h2>
 
           {committedChanges.length === 0 && uncommittedChanges.length === 0 ? (
-            <div className="text-center py-12 border rounded-lg text-muted-foreground">
-              No changes yet. Start editing a document to see changes here.
+            <div className="text-center py-12 border rounded-lg">
+              {importResult ? (
+                <div>
+                  <p className="font-medium">
+                    Imported {importResult.imported} file{importResult.imported !== 1 ? 's' : ''}
+                  </p>
+                  {importResult.skipped > 0 && (
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {importResult.skipped} skipped (already exist)
+                    </p>
+                  )}
+                  {importResult.errors > 0 && (
+                    <p className="text-sm text-destructive mt-1">
+                      {importResult.errors} error{importResult.errors !== 1 ? 's' : ''}
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <div>
+                  <p className="text-muted-foreground mb-1">No files in this workspace yet.</p>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Import existing markdown files from{' '}
+                    <span className="font-medium text-foreground">{workspace.githubRepo}</span>
+                  </p>
+                  <button
+                    onClick={handleImport}
+                    disabled={isImporting}
+                    className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50"
+                  >
+                    {isImporting ? 'Importing...' : 'Import from GitHub'}
+                  </button>
+                </div>
+              )}
             </div>
           ) : committedChanges.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground text-sm">

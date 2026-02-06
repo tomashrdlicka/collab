@@ -48,17 +48,18 @@ Built with pnpm workspaces + Turborepo.
 This creates a cyclic dependency (`shared -> db -> shared`). The `@collab/shared` package is lightweight: types, schemas, constants, crypto only. Anything needing database access belongs in the app layer.
 
 GitHub API functions that need DB access live in each app separately:
-- `apps/server/src/services/github.ts` - server-side
-- `apps/web/lib/github.ts` - web app (Next.js API routes)
+- `apps/server/src/services/github.ts` - server-side (commit + read)
+- `apps/web/lib/github.ts` - web app commit functions (Next.js API routes)
+- `apps/web/lib/github-read.ts` - web app read functions (scan repo, fetch file contents)
 
-Both import `decryptToken` from `@collab/shared`.
+All import `decryptToken` from `@collab/shared`.
 
 ## Package Details
 
 ### @collab/shared (`packages/shared/`)
-- `types.ts` - TypeScript interfaces and type definitions
+- `types.ts` - TypeScript interfaces and type definitions (includes `ImportResult`)
 - `schemas.ts` - Zod validation schemas (workspace, member, share link, commit, CLI auth)
-- `constants.ts` - Sync settings, API paths, error codes, presence colors, regex patterns
+- `constants.ts` - Sync settings, API paths (includes `API_PATHS.IMPORT`), error codes, presence colors, regex patterns
 - `crypto.ts` - `encryptToken()` / `decryptToken()` using AES-256-GCM
 
 ### @collab/db (`packages/db/`)
@@ -96,6 +97,7 @@ Both import `decryptToken` from `@collab/shared`.
 | `/api/workspaces/[id]/changes` | GET | List all changes (paginated) |
 | `/api/workspaces/[id]/changes/uncommitted` | GET | Uncommitted changes only |
 | `/api/workspaces/[id]/commit` | POST | Manual commit to GitHub |
+| `/api/workspaces/[id]/import` | POST | Import .md files from GitHub repo |
 | `/api/workspaces/[id]/members` | GET, POST | List/add members |
 | `/api/workspaces/[id]/members/[userId]` | PATCH, DELETE | Update role/remove member |
 | `/api/workspaces/[id]/share-links` | GET, POST | List/create share links |
@@ -207,6 +209,7 @@ No tests exist yet. Test suite needs to be written covering:
 4. **Review/Commit UI** - Diff viewer, commit modal with message input, grouped changes view
 5. **Settings/Members** - Owner-only settings page, auto-commit config, member management with roles
 6. **Change Indicators** - Sidebar shows modified/new file badges from uncommitted changes
+7. **GitHub Import** - Scan repo for .md files via Git Trees API, import into workspace with Yjs docs, skip existing files, `committed: true` flag
 
 ## Moving Forward
 

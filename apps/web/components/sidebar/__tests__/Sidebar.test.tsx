@@ -27,6 +27,14 @@ vi.mock('@/lib/utils', () => ({
     classes.filter(Boolean).join(' '),
 }))
 
+// Mock useWorkspace
+vi.mock('@/app/w/[slug]/workspace-provider', () => ({
+  useWorkspace: () => ({
+    workspace: { id: 'ws-1', name: 'Test', slug: 'test-workspace', githubRepo: 'owner/repo', githubBranch: 'main' },
+    user: { id: 'user-1', name: 'Test User', role: 'owner' },
+  }),
+}))
+
 const mockDocuments = [
   { path: 'README.md', contentHash: 'hash1' },
   { path: 'docs/guide.md', contentHash: 'hash2' },

@@ -125,3 +125,27 @@
 **How it was fixed**: Upgraded to drizzle-kit 0.30.5 + drizzle-orm 0.44.2 (compatible pair). Updated `drizzle.config.ts` format accordingly.
 
 **Prevention rule**: drizzle-orm and drizzle-kit versions must be compatible. Check the drizzle docs for version pairing. When upgrading, update config format to match the new version.
+
+---
+
+## Sidebar Tests Break When Adding useWorkspace() Context Hook
+
+**What went wrong**: Adding `useWorkspace()` to `Sidebar.tsx` caused all 14 existing Sidebar tests to fail with "useWorkspace must be used within WorkspaceProvider".
+
+**Why it happened**: The existing tests rendered `<Sidebar>` without wrapping it in a `WorkspaceProvider`. The hook throws when called outside its context.
+
+**How it was fixed**: Added a `vi.mock('@/app/w/[slug]/workspace-provider', ...)` to the Sidebar test file, returning a mock `useWorkspace` with default workspace/user data.
+
+**Prevention rule**: When adding a React context hook to a component, immediately check its test file and add the corresponding mock. Mock the hook at module level, not by wrapping in a provider (simpler, more isolated).
+
+---
+
+## Testing Library getAllByText for Duplicate Text
+
+**What went wrong**: Two workspace-changes tests failed because "owner/repo" appeared twice in the DOM (once in the header, once in the import CTA empty state).
+
+**Why it happened**: `screen.getByText('owner/repo')` throws when there are multiple matches. The empty state shows the repo name in the import CTA, and the header also shows it.
+
+**How it was fixed**: Changed to `screen.getAllByText('owner/repo')` and asserted on the array length.
+
+**Prevention rule**: Use `getAllByText` when the same text can appear in multiple places (header + body, labels + values). Only use `getByText` when you're certain the text is unique.

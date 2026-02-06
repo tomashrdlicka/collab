@@ -211,3 +211,16 @@ export type CollabMessage =
   | ConflictDetectedMessage
   | ConflictResolvedMessage
   | ChangeNotificationMessage
+
+// Import types
+export interface ImportResult {
+  imported: number
+  skipped: number
+  errors: number
+  truncated: boolean
+  files: Array<{
+    path: string
+    status: 'imported' | 'skipped' | 'error'
+    reason?: string
+  }>
+}
