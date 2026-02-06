@@ -9,6 +9,7 @@
   "scripts": {
     "build": "tsup src/index.ts --format esm --outDir dist",
     "dev": "tsx src/index.ts",
+    "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist"
   },

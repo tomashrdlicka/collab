@@ -31,7 +31,11 @@ export async function loginCommand(): Promise<void> {
       throw new Error('Failed to start authentication')
     }
 
-    const { code, authUrl, expiresAt } = await startResponse.json()
+    const { code, authUrl, expiresAt } = (await startResponse.json()) as {
+      code: string
+      authUrl: string
+      expiresAt: string
+    }
 
     spinner.stop()
 
@@ -58,7 +62,12 @@ export async function loginCommand(): Promise<void> {
         continue
       }
 
-      const pollData = await pollResponse.json()
+      const pollData = (await pollResponse.json()) as {
+        status: string
+        token?: string
+        userId?: string
+        username?: string
+      }
 
       if (pollData.status === 'completed' && pollData.token) {
         pollSpinner.succeed('Authentication successful!')
@@ -66,8 +75,8 @@ export async function loginCommand(): Promise<void> {
         // Store credentials
         await storeToken(pollData.token)
         await storeUser({
-          id: pollData.userId,
-          username: pollData.username,
+          id: pollData.userId!,
+          username: pollData.username!,
         })
 
         console.log(chalk.green(`\nLogged in as @${pollData.username}`))

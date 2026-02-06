@@ -14,7 +14,11 @@ interface AuthContext {
 /**
  * Extension for handling user presence and awareness
  */
-export function createPresenceExtension(): Extension {
+export interface PresenceExtension extends Extension {
+  getDocumentPresence(documentName: string): UserPresence[]
+}
+
+export function createPresenceExtension(): PresenceExtension {
   // Track connected users per document
   const documentUsers = new Map<string, Map<string, UserPresence>>()
 
@@ -35,7 +39,7 @@ export function createPresenceExtension(): Extension {
         name: context.userName ?? 'Anonymous',
         color: getUserColor(context.userId),
         type: context.userType ?? 'human',
-        agentName: context.agentName,
+        ...(context.agentName != null ? { agentName: context.agentName } : {}),
         cursor: null,
       }
       users.set(context.userId, presence)
@@ -72,7 +76,7 @@ export function createPresenceExtension(): Extension {
 
       // Parse awareness states from the update
       // Hocuspocus awareness updates contain cursor positions
-      const states = data.states as Map<number, Record<string, unknown>>
+      const states = data.states as unknown as Map<number, Record<string, unknown>>
 
       for (const [clientId, state] of states) {
         const cursor = state.cursor as { anchor: number; head: number } | undefined

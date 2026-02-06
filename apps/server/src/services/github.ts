@@ -69,7 +69,7 @@ async function getBranchSha(
     throw new Error(`Failed to get branch: ${await response.text()}`)
   }
 
-  const data = await response.json()
+  const data = (await response.json()) as { object: { sha: string } }
   return data.object.sha
 }
 
@@ -94,7 +94,7 @@ async function createBlob(
     throw new Error(`Failed to create blob: ${await response.text()}`)
   }
 
-  const data = await response.json()
+  const data = (await response.json()) as { sha: string }
   return data.sha
 }
 
@@ -127,7 +127,7 @@ async function createTree(
     throw new Error(`Failed to create tree: ${await response.text()}`)
   }
 
-  const data = await response.json()
+  const data = (await response.json()) as { sha: string }
   return data.sha
 }
 
@@ -155,7 +155,7 @@ async function createCommit(
     throw new Error(`Failed to create commit: ${await response.text()}`)
   }
 
-  const data = await response.json()
+  const data = (await response.json()) as { sha: string }
   return data.sha
 }
 
@@ -262,7 +262,9 @@ export async function listRepositoryFiles(
     throw new Error(`Failed to list files: ${await response.text()}`)
   }
 
-  const data = await response.json()
+  const data = (await response.json()) as
+    | Array<{ name: string; path: string; type: string }>
+    | { name: string; path: string; type: string }
 
   if (!Array.isArray(data)) {
     // Single file
@@ -299,7 +301,7 @@ export async function getFileContent(
     throw new Error(`Failed to get file: ${await response.text()}`)
   }
 
-  const data = await response.json()
+  const data = (await response.json()) as { encoding: string; content: string }
 
   if (data.encoding === 'base64') {
     return Buffer.from(data.content, 'base64').toString('utf8')
@@ -324,9 +326,14 @@ export async function listUserRepos(
     throw new Error(`Failed to list repos: ${await response.text()}`)
   }
 
-  const data = await response.json()
+  const data = (await response.json()) as Array<{
+    name: string
+    full_name: string
+    description: string | null
+    private: boolean
+  }>
 
-  return data.map((repo: { name: string; full_name: string; description: string | null; private: boolean }) => ({
+  return data.map((repo) => ({
     name: repo.name,
     full_name: repo.full_name,
     description: repo.description,

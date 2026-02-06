@@ -39,11 +39,13 @@ export async function commitCommand(options: CommitOptions): Promise<void> {
     })
 
     if (!response.ok) {
-      const data = await response.json()
+      const data = (await response.json()) as { error?: { message?: string } }
       throw new Error(data.error?.message ?? 'Failed to commit')
     }
 
-    const { data } = await response.json()
+    const { data } = (await response.json()) as {
+      data: { sha: string; message: string; filesChanged: number; url?: string }
+    }
 
     spinner.succeed('Committed successfully!')
 

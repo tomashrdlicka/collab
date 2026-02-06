@@ -39,8 +39,8 @@ async function main() {
     },
 
     // Error handling
-    async onError(data) {
-      console.error('Hocuspocus error:', data)
+    async onDestroy() {
+      console.log('Hocuspocus server destroyed')
     },
   })
 

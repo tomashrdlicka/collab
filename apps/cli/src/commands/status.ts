@@ -37,7 +37,9 @@ export async function statusCommand(): Promise<void> {
       throw new Error('Failed to fetch status')
     }
 
-    const { data: changes } = await response.json()
+    const { data: changes } = (await response.json()) as {
+      data: Array<{ changeType: string; documentPath: string }>
+    }
 
     spinner.stop()
 

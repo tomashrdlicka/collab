@@ -52,7 +52,9 @@ export async function initCommand(options: InitOptions): Promise<void> {
       throw new Error('Failed to fetch workspaces')
     }
 
-    const { data: workspaces } = await response.json()
+    const { data: workspaces } = (await response.json()) as {
+      data: Array<{ id: string; name: string; slug: string; githubRepo: string }>
+    }
 
     spinner.stop()
 

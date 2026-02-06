@@ -57,7 +57,7 @@ export function createCommitService(db: Database): CommitService {
           .update(workspaces)
           .set({
             dailyCommitCount: 0,
-            dailyCommitResetAt: new Date(),
+            dailyCommitResetAt: new Date().toISOString().split('T')[0]!,
           })
           .where(eq(workspaces.id, workspaceId))
         workspace.dailyCommitCount = 0
